@@ -6,6 +6,7 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Int8
 
 import numpy as np
+import cv2
 
 
 class RGBToGrayConverter(Node):
@@ -26,15 +27,15 @@ class RGBToGrayConverter(Node):
         # My Work
         move = 0 # 0 - not move, 1 = move 
 
-        if(len(prev_kadr) == 0): #first call of function
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            prev_kadr = cv2.blur(gray, (5, 5))
+        if(len(self.prev_kadr) == 0): #first call of function
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            self.prev_kadr = cv2.blur(gray, (5, 5))
 
         else: #non first call of function
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            current_kadr = cv2.blur(gray, (5, 5))
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            self.current_kadr = cv2.blur(gray, (5, 5))
 
-            difference = cv2.subtract(current_kadr, prev_kadr)
+            difference = cv2.subtract(self.current_kadr, self.prev_kadr)
 
             mask = cv2.threshold(difference, 20, 255, cv2.THRESH_BINARY)[1]
 
@@ -43,10 +44,10 @@ class RGBToGrayConverter(Node):
             if percentage >= 0.1: #number non zero pixel more? than 307.2
                 move = 1
 
-            prev_kadr = current_kadr
+            self.prev_kadr = self.current_kadr
         # My Work
 
-        self.get_logger().info("Got image with shape: %s" % str(img.shape))
+        self.get_logger().info("Got image with shape: %s" % str(img.shape) + "Move index is: " + str(move))
         return move # original 0, also my work
 
     def listener_callback(self, msg: Image):

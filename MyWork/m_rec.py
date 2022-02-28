@@ -134,6 +134,8 @@ def mesh_m_rec(image):
 
 		mask = cv2.threshold(difference, 20, 255, cv2.THRESH_BINARY)[1]
 
+		rgb_mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB)
+
 		# creating mesh 4*4
 		squares_with_moves = []
 		num_of_square = 0
@@ -159,6 +161,9 @@ def mesh_m_rec(image):
 
 				num_of_square = num_of_square + 1
 
+				rgb_mask = cv2.rectangle(rgb_mask, (j, i), (j+w_step, i+h_step), (0, 255, 0), 2)
+				#print("i: " + str(i) + " j: " + str(j) + " i+h_step: " + str(i+h_step) + " j+w_step: " + str(j+w_step))
+
 		# percentage = (cv2.sumElems(difference)[0] * 100)/ (difference.size*255)
 		# percentage = (np.count_nonzero(mask) * 100)/ mask.size
 		# if percentage >= 100:
@@ -183,10 +188,11 @@ def mesh_m_rec(image):
 		cv2.imshow("Diff: ", difference)
 		#print("percentage: " + str(percentage) + " non_z: " + str(np.count_nonzero(mask)) + " size: " + str(mask.size))
 		print("squares_with_moves: " + str(squares_with_moves))
-		cv2.imshow("Mask: ", mask)
+		cv2.imshow("rgb_Mask: ", rgb_mask)
 
 def main():
-	cap = cv2.VideoCapture("/home/slava/Source/YoloV3_OVN_Inference/input.avi")
+	#cap = cv2.VideoCapture("/home/slava/Source/YoloV3_OVN_Inference/input.avi")
+	cap = cv2.VideoCapture(0)
 
 	if (cap.isOpened() == False):
 		print("Error opening video stream or file")
